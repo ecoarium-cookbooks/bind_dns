@@ -1,0 +1,30 @@
+
+$TTL 10M
+$ORIGIN <%= @master_zone %>.
+@       IN SOA  @ rname.invalid. (
+                                <%=Time.now.to_i %>      ; serial
+                                        10M     ; refresh
+                                        1H      ; retry
+                                        1W      ; expire
+                                        3H )    ; minimum
+
+<% @name_servers.each do |machine_name| -%>
+                   NS  <%= @servers[machine_name][:fqdn] %>.
+<% end -%>
+
+                   A 	 <%= @master_address %>
+                   MX	 10 <%= @servers[:smtp][:fqdn] %>.
+
+<% @servers.each do |type, info| %>
+<%= info[:fqdn].split(".").first %>		 IN A     <%= info[:ip] %>
+<% end %>
+
+<% @subzones.each do |zone| -%>
+$ORIGIN <%= zone[:name] %>.
+
+<% zone[:name_servers].each do |fqdn,ip| -%>
+@             IN      NS     <%= fqdn %>.
+<%= fqdn.split(".").first %>           IN      A      <%= ip %>
+<% end -%>
+
+<% end -%>
