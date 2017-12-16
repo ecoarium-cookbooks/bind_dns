@@ -5,25 +5,13 @@ include "<%= "#{node[:bind][:sysconfdir]}/#{file}" %>";
 
 zone "<%= @master_zone %>" in {
   type <%= node[:bind][:zonetype] %>;
-  <% if node[:bind][:zonetype] == "master" %> 
+  <% if node[:bind][:zonetype] == "master" %>
   file "<%= node[:bind][:zonetype] %>/<%= @master_zone %>";
   <% else %>
   file "slaves/<%= @master_zone %>";
-  masters { <%= @master_address %>; };  
+  masters { <%= @master_address %>; };
   <% end %>
 };
-
-<% @subzones.each do |zone| -%>
-zone "<%= zone[:name] %>" in {
-  type slave;
-  file "slaves/<%= zone[:name] %>";
-  masters { 
-    <% zone[:name_servers].each do |fqdn,ip| -%>
-    <%= ip %>;
-    <% end -%>
-  };
-};
-<% end -%>
 
 zone "." IN {
   type hint;

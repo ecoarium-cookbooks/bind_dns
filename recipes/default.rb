@@ -21,7 +21,7 @@ directory node[:bind][:sysconfdir] do
 end
 
 %w{ data master slaves }.each{|dir_name|
-  
+
   directory "#{node[:bind][:vardir]}/#{dir_name}" do
     owner "named"
     group "named"
@@ -42,7 +42,7 @@ node[:bind][:etc_cookbook_files].each{|file_name|
 }
 
 node[:bind][:var_cookbook_files].each{|file_name|
-  
+
   cookbook_file "#{node[:bind][:vardir]}/#{file_name}" do
     owner "named"
     group "named"
@@ -78,15 +78,12 @@ template "#{node[:bind][:sysconfdir]}/named.options" do
   notifies :reload, "service[named]"
 end
 
-subzones = data_bag_item(:dns, :subzones)[:subzones]
-
 template "/etc/named.conf" do
   owner "named"
   group "named"
   mode 0644
   variables(
     :master_zone => master_zone,
-    :subzones => subzones,
     :master_address => master_address
   )
   notifies :reload, "service[named]"
@@ -109,7 +106,6 @@ template "/var/named/#{zonedirname}/#{master_zone}" do
 
   variables(
     :master_zone => master_zone,
-    :subzones => subzones,
     :name_servers => node[:bind][:name_servers],
     :servers => servers,
     :master_address => master_address
@@ -117,4 +113,3 @@ template "/var/named/#{zonedirname}/#{master_zone}" do
 
   notifies :reload, "service[named]"
 end
-

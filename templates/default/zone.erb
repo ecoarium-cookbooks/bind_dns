@@ -18,13 +18,3 @@ $ORIGIN <%= @master_zone %>.
 <% @servers.each do |type, info| %>
 <%= info[:fqdn].split(".").first %>		 IN A     <%= info[:ip] %>
 <% end %>
-
-<% @subzones.each do |zone| -%>
-$ORIGIN <%= zone[:name] %>.
-
-<% zone[:name_servers].each do |fqdn,ip| -%>
-@             IN      NS     <%= fqdn %>.
-<%= fqdn.split(".").first %>           IN      A      <%= ip %>
-<% end -%>
-
-<% end -%>
